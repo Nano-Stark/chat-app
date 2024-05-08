@@ -28,6 +28,9 @@ app.get("/ping", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/test", (req, res) => {
+  res.send("Testing route. API endpoint is working")
+})
 
 // Error handler
 app.use((err, req, res, next) => {
