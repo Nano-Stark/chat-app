@@ -5,6 +5,7 @@ const authRoutes = require("./routes/auth");
 const messageRoutes = require("./routes/messages");
 const app = express();
 const socket = require("socket.io");
+const morgan = require("morgan")
 require("dotenv").config();
 
 app.use(morgan("dev"))
