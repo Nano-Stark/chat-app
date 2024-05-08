@@ -9,7 +9,10 @@ const morgan = require("morgan")
 require("dotenv").config();
 
 app.use(morgan("dev"))
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
 app.use(express.json());
 
 mongoose
