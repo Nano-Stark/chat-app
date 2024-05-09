@@ -4,3 +4,4 @@ node_modules
 docker-compose.yml
 server/Dockerfile
 client/public/Dockerfile
+README_.md
