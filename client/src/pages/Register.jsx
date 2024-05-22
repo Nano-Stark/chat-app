@@ -16,6 +16,7 @@ export default function Register() {
     draggable: true,
     theme: "dark",
   };
+  const [loading, setIsLoading] = useState(false)
   const [values, setValues] = useState({
     username: "",
     email: "",
@@ -42,6 +43,7 @@ export default function Register() {
       );
       return false;
     } else if (username.length < 3) {
+      console.log("1",loading)
       toast.error(
         "Username should be greater than 3 characters.",
         toastOptions
@@ -63,31 +65,44 @@ export default function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (handleValidation()) {
-      const { email, username, password } = values;
-      const { data } = await axios.post(registerRoute, {
-        username,
-        email,
-        password,
-      });
+    setIsLoading(true)
 
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-      }
-      if (data.status === true) {
-        localStorage.setItem(
-          process.env.REACT_APP_LOCALHOST_KEY,
-          JSON.stringify(data.user)
-        );
-        navigate("/");
+    const register = async () => {
+      try {
+        if (handleValidation()) {
+        const { email, username, password } = values;
+        const { data } = await axios.post(registerRoute, {
+          username,
+          email,
+          password,
+        });
+        if (data.status === false) {
+          toast.error(data.msg, toastOptions);
+        }
+        if (data.status === true) {
+          localStorage.setItem(
+            process.env.REACT_APP_LOCALHOST_KEY,
+            JSON.stringify(data.user)
+          );
+          navigate("/");
+        } 
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("An error occurred during registration.", toastOptions);
+      } finally {
+        setIsLoading(false);
       }
     }
+
+    setTimeout(register, 200)
+
   };
 
   return (
     <>
       <FormContainer>
-        <form action="" onSubmit={(event) => handleSubmit(event)}>
+        <form action="" noValidate onSubmit={(event) => handleSubmit(event) }>
           <div className="brand">
             <img src={Logo} alt="logo" />
             <h1>clicky</h1>
@@ -116,7 +131,10 @@ export default function Register() {
             name="confirmPassword"
             onChange={(e) => handleChange(e)}
           />
-          <button type="submit">Create User</button>
+          {loading
+            ? <button disabled style={{opacity:0.2}}>...</button>
+            : <button type="submit">Create User</button>
+          }
           <span>
             Already have an account ? <Link to="/login">Login.</Link>
           </span>

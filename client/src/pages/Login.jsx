@@ -9,6 +9,7 @@ import { loginRoute } from "../utils/APIRoutes";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [loading, setIsLoading] = useState(false)
   const [values, setValues] = useState({ username: "", password: "" });
   const toastOptions = {
     position: "bottom-right",
@@ -41,24 +42,37 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (validateForm()) {
-      const { username, password } = values;
-      const { data } = await axios.post(loginRoute, {
-        username,
-        password,
-      });
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-      }
-      if (data.status === true) {
-        localStorage.setItem(
-          process.env.REACT_APP_LOCALHOST_KEY,
-          JSON.stringify(data.user)
-        );
+    setIsLoading(true)
 
-        navigate("/");
+    const login = async () => {
+      try {
+        if (validateForm()) {
+          const { username, password } = values;
+          const { data } = await axios.post(loginRoute, {
+            username,
+            password,
+          });
+          if (data.status === false) {
+            toast.error(data.msg, toastOptions);
+    
+          }
+          if (data.status === true) {
+            localStorage.setItem(
+              process.env.REACT_APP_LOCALHOST_KEY,
+              JSON.stringify(data.user)
+            );
+    
+            navigate("/");
+          }
+        }
+      }  catch (error) {
+        console.error(error);
+        toast.error("An error occurred during login.", toastOptions);
+      } finally {
+        setIsLoading(false);
       }
     }
+    setTimeout(login, 200)
   };
 
   return (
@@ -82,7 +96,10 @@ export default function Login() {
             name="password"
             onChange={(e) => handleChange(e)}
           />
-          <button type="submit">Log In</button>
+           {loading
+            ? <button disabled style={{opacity:0.2}}>...</button>
+            : <button type="submit">Log In</button>
+          }
           <span>
             Don't have an account ? <Link to="/register">Create One.</Link>
           </span>
