@@ -5,23 +5,24 @@ export default function Welcome() {
   const [userName, setUserName] = useState("");
   useEffect(() => {
     const run = async () => {
-      setUserName(
-        await JSON.parse(
-          localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-        ).username
-      );
+      const data = await JSON.parse(
+        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+      )
+      data?.username && setUserName(data.username);
     }
     run()
   }, []);
-  
+
   return (
-    <Container>
-      <img src={Robot} alt="" />
-      <h1>
-        Welcome, <span>{userName}!</span>
-      </h1>
-      <h3>Please select a chat to Start messaging.</h3>
-    </Container>
+    userName && (
+      <Container>
+        <img src={Robot} alt="" />
+        <h1>
+          Welcome, <span>{userName}!</span>
+        </h1>
+        <h3>Please select a chat to start messaging.</h3>
+      </Container>
+    )
   );
 }
 
